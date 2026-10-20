@@ -1,3 +1,5 @@
+import TypeBadge, { TYPE_STYLES } from './TypeBadge.jsx';
+
 /**
  * One task card on the board. Clicking anywhere on it opens the edit modal.
  * The title is a real button (stretched over the card) so it works by keyboard too.
@@ -16,16 +18,23 @@ function initials(name) {
 
 export default function TaskCard({ task, onOpen }) {
   return (
-    <article className="relative rounded-md border border-text-muted/20 bg-surface-card p-3 transition-shadow hover:shadow-lg hover:shadow-black/30">
-      <h3 className="text-sm font-medium text-text-primary">
-        <button
-          type="button"
-          onClick={() => onOpen(task)}
-          className="text-left after:absolute after:inset-0 after:rounded-md focus:outline-none focus-visible:after:ring-2 focus-visible:after:ring-brand-accent"
-        >
-          {task.title}
-        </button>
-      </h3>
+    <article
+      className={`relative rounded-md border border-l-4 border-text-muted/20 bg-surface-card p-3 transition-shadow hover:shadow-lg hover:shadow-black/30 ${
+        (TYPE_STYLES[task.type] ?? TYPE_STYLES.feature).stripe
+      }`}
+    >
+      <div className="flex items-start justify-between gap-2">
+        <h3 className="text-sm font-medium text-text-primary">
+          <button
+            type="button"
+            onClick={() => onOpen(task)}
+            className="text-left after:absolute after:inset-0 after:rounded-md focus:outline-none focus-visible:after:ring-2 focus-visible:after:ring-brand-accent"
+          >
+            {task.title}
+          </button>
+        </h3>
+        <TypeBadge type={task.type} />
+      </div>
       <div className="mt-3 flex items-center gap-2">
         <span
           className="flex h-6 w-6 items-center justify-center rounded-full bg-brand-primary font-mono text-[10px] font-medium text-white"

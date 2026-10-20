@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import TypeBadge, { TYPE_STYLES } from './TypeBadge.jsx';
 
 const FIELD =
   'w-full rounded-md border border-text-muted/30 bg-surface-page px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-brand-accent';
@@ -39,12 +40,17 @@ export default function TaskModal({ task, isNew, stages, team, onSave, onDelete,
         aria-modal="true"
         aria-labelledby="task-modal-title"
         onSubmit={submit}
-        className="max-h-full w-full max-w-lg overflow-y-auto rounded-lg border border-text-muted/30 bg-surface-card p-5 shadow-2xl shadow-black/50"
+        className={`max-h-full w-full max-w-lg overflow-y-auto rounded-lg border border-l-4 border-text-muted/30 bg-surface-card p-5 shadow-2xl shadow-black/50 ${
+          (TYPE_STYLES[form.type] ?? TYPE_STYLES.feature).stripe
+        }`}
       >
         <div className="mb-4 flex items-start justify-between">
-          <h2 id="task-modal-title" className="text-lg font-semibold text-text-primary">
-            {isNew ? 'New task' : 'Edit task'}
-          </h2>
+          <div className="flex items-center gap-3">
+            <h2 id="task-modal-title" className="text-lg font-semibold text-text-primary">
+              {isNew ? 'New task' : 'Edit task'}
+            </h2>
+            <TypeBadge type={form.type} />
+          </div>
           <button
             type="button"
             onClick={onClose}
