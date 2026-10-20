@@ -1,22 +1,16 @@
+import Avatar from './Avatar.jsx';
 import TypeBadge, { TYPE_STYLES } from './TypeBadge.jsx';
 
 /**
  * One task card on the board. Clicking anywhere on it opens the edit modal.
  * The title is a real button (stretched over the card) so it works by keyboard too.
- * Later milestones add the type stripe (M6), hand-off (M7), due tint (M8) and
- * Copy Context (M10; give that button `relative z-10` so it sits above the stretched title).
+ * Anything else interactive on the card needs `relative z-10` so it sits above that
+ * stretched title (the hand-off dropdown here; Copy Context in M10).
+ * Later milestones add the due tint (M8) and Copy Context (M10).
  */
-function initials(name) {
-  return name
-    .split(' ')
-    .filter(Boolean)
-    .map((part) => part[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase();
-}
+export default function TaskCard({ task, team, onOpen, onHandOff }) {
+  const others = team.filter((name) => name !== task.assignee);
 
-export default function TaskCard({ task, onOpen }) {
   return (
     <article
       className={`relative rounded-md border border-l-4 border-text-muted/20 bg-surface-card p-3 transition-shadow hover:shadow-lg hover:shadow-black/30 ${
@@ -35,14 +29,26 @@ export default function TaskCard({ task, onOpen }) {
         </h3>
         <TypeBadge type={task.type} />
       </div>
-      <div className="mt-3 flex items-center gap-2">
-        <span
-          className="flex h-6 w-6 items-center justify-center rounded-full bg-brand-primary font-mono text-[10px] font-medium text-white"
-          aria-hidden="true"
-        >
-          {initials(task.assignee)}
-        </span>
-        <span className="text-xs text-text-muted">{task.assignee}</span>
+
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <Avatar name={task.assignee} />
+          <span className="text-xs text-text-muted">{task.assignee}</span>
+        </div>
+
+        {others.length > 0 && (
+          <select
+            aria-label={`Hand off "${task.title}" to…`}
+            value=""
+            onChange={(e) => e.target.value && onHandOff(task.id, e.target.value)}
+            className="relative z-10 max-w-[7.5rem] shrink-0 rounded border border-text-muted/30 bg-surface-page px-1.5 py-1 text-xs text-text-muted hover:text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-accent"
+          >
+            <option value="">Hand off to…</option>
+            {others.map((name) => (
+              <option key={name} value={name}>{name}</option>
+            ))}
+          </select>
+        )}
       </div>
     </article>
   );

@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import Board from './components/Board.jsx';
 import TaskModal from './components/TaskModal.jsx';
+import TeamStrip from './components/TeamStrip.jsx';
+import Toast from './components/Toast.jsx';
 
 /**
  * Vibecoding Project Tracker — starter scaffold.
@@ -44,9 +46,8 @@ export const STAGES = [
   { id: 'done',        label: 'Done' },
 ];
 
-// Replace these placeholders with the three names from PRD §8 before M4.
-// They become the only valid values for `Task.assignee`.
-export const TEAM = ['Spencer Snowden'];
+// The three names from PRD §8. They are the only valid values for `Task.assignee`.
+export const TEAM = ['Spencer Snowden', 'Spencer Snowden1', 'Spencer Snowden2'];
 
 /**
  * A tiny localStorage hook — survives reloads, no library needed.
@@ -89,8 +90,8 @@ function seedTasks() {
   return [
     { ...base, id: 't-1', title: 'Design the board layout', description: 'Four columns, dark theme from DESIGN.md.', type: 'feature', status: 'done', dueDate: isoDay(-1) },
     { ...base, id: 't-2', title: 'Build the add / edit modal', description: 'Every task field, status dropdown, delete button.', type: 'feature', status: 'in-progress', dueDate: isoDay(1) },
-    { ...base, id: 't-3', title: 'Fix card text overflow', description: 'Long titles break the card layout.', type: 'bug', status: 'review', dueDate: isoDay(3) },
-    { ...base, id: 't-4', title: 'Write the Copy Context template', description: 'Title, description and context as a clean briefing.', type: 'feature', status: 'todo', dueDate: null },
+    { ...base, id: 't-3', assignee: TEAM[1], title: 'Fix card text overflow', description: 'Long titles break the card layout.', type: 'bug', status: 'review', dueDate: isoDay(3) },
+    { ...base, id: 't-4', assignee: TEAM[2], title: 'Write the Copy Context template', description: 'Title, description and context as a clean briefing.', type: 'feature', status: 'todo', dueDate: null },
   ];
 }
 
@@ -115,11 +116,19 @@ export default function App() {
   const [tasks, setTasks] = useLocalStorage('vibetracker.tasks', seedTasks());
   // The task open in the modal (null = closed). `id === ''` means a new task.
   const [editing, setEditing] = useState(null);
+  // Short confirmation message (e.g. after a hand-off); clears itself.
+  const [toast, setToast] = useState(null);
   //
   // TODO M11 anchors:
   //   const [anchors, setAnchors] = useLocalStorage('vibetracker.anchors', [...]);
 
   const closeModal = useCallback(() => setEditing(null), []);
+
+  useEffect(() => {
+    if (!toast) return undefined;
+    const timer = setTimeout(() => setToast(null), 2500);
+    return () => clearTimeout(timer);
+  }, [toast]);
 
   const saveTask = (task) => {
     setTasks((current) =>
@@ -133,6 +142,11 @@ export default function App() {
   const deleteTask = (id) => {
     setTasks((current) => current.filter((t) => t.id !== id));
     setEditing(null);
+  };
+
+  const handOff = (id, name) => {
+    setTasks((current) => current.map((t) => (t.id === id ? { ...t, assignee: name } : t)));
+    setToast({ text: `Handed off to ${name}.`, key: Date.now() });
   };
 
   return (
@@ -157,7 +171,11 @@ export default function App() {
 
       {/* TODO M11 anchors: render the Anchor Board (Presentation / Demo / Report / Documentation) above the board. */}
 
-      <Board stages={STAGES} tasks={tasks} onOpen={setEditing} />
+      <TeamStrip team={TEAM} tasks={tasks} />
+
+      <Board stages={STAGES} tasks={tasks} team={TEAM} onOpen={setEditing} onHandOff={handOff} />
+
+      {toast && <Toast key={toast.key} message={toast.text} />}
 
       {editing && (
         <TaskModal

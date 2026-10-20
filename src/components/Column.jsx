@@ -9,7 +9,7 @@ const STAGE_STYLES = {
 };
 
 /** One Kanban column: a stage header with a count, and its task cards. */
-export default function Column({ stage, tasks, onOpen }) {
+export default function Column({ stage, tasks, team, onOpen, onHandOff }) {
   const style = STAGE_STYLES[stage.id];
   return (
     <section
@@ -30,7 +30,13 @@ export default function Column({ stage, tasks, onOpen }) {
             Nothing here yet.
           </p>
         ) : (
-          tasks.map((task) => <TaskCard key={task.id} task={task} onOpen={onOpen} />)
+          tasks.map((task) => <TaskCard
+              key={task.id}
+              task={task}
+              team={team}
+              onOpen={onOpen}
+              onHandOff={onHandOff}
+            />)
         )}
       </div>
     </section>
