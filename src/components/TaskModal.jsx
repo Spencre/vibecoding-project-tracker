@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import TypeBadge, { TYPE_STYLES } from './TypeBadge.jsx';
+import { AI_TOOLS, CONTEXT_TEMPLATE } from '../utils/context.js';
+import { timeAgo } from '../utils/time.js';
 
 const FIELD =
   'w-full rounded-md border border-text-muted/30 bg-surface-page px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-brand-accent';
@@ -27,7 +29,15 @@ export default function TaskModal({ task, isNew, stages, team, onSave, onDelete,
   const submit = (e) => {
     e.preventDefault();
     if (titleMissing) return;
-    onSave({ ...form, title: form.title.trim(), dueDate: form.dueDate || null });
+    // The timestamp is set automatically whenever the context text was edited.
+    const contextEdited = form.context !== task.context;
+    onSave({
+      ...form,
+      title: form.title.trim(),
+      dueDate: form.dueDate || null,
+      contextTool: form.contextTool || null,
+      contextUpdatedAt: contextEdited ? new Date().toISOString() : form.contextUpdatedAt,
+    });
   };
 
   return (
@@ -40,7 +50,7 @@ export default function TaskModal({ task, isNew, stages, team, onSave, onDelete,
         aria-modal="true"
         aria-labelledby="task-modal-title"
         onSubmit={submit}
-        className={`max-h-full w-full max-w-lg overflow-y-auto rounded-lg border border-l-4 border-text-muted/30 bg-surface-card p-5 shadow-2xl shadow-black/50 ${
+        className={`max-h-full w-full max-w-xl overflow-y-auto rounded-lg border border-l-4 border-text-muted/30 bg-surface-card p-5 shadow-2xl shadow-black/50 ${
           (TYPE_STYLES[form.type] ?? TYPE_STYLES.feature).stripe
         }`}
       >
@@ -119,6 +129,52 @@ export default function TaskModal({ task, isNew, stages, team, onSave, onDelete,
                 className={`${FIELD} [color-scheme:dark]`}
               />
             </div>
+          </div>
+
+          <div>
+            <div className="mb-1 flex items-end justify-between gap-2">
+              <label htmlFor="task-context" className="text-xs font-medium text-text-muted">
+                Context
+              </label>
+              {form.context.trim() === '' && (
+                <button
+                  type="button"
+                  onClick={() => setForm((f) => ({ ...f, context: CONTEXT_TEMPLATE }))}
+                  className="rounded text-xs text-brand-accent hover:underline focus:outline-none focus:ring-2 focus:ring-brand-accent"
+                >
+                  Insert template
+                </button>
+              )}
+            </div>
+            <textarea
+              id="task-context"
+              rows={9}
+              value={form.context}
+              onChange={set('context')}
+              placeholder="Background, constraints, what you've tried, where to pick up. Markdown works."
+              className={`${FIELD} font-mono text-xs leading-relaxed`}
+            />
+            {/* TODO stretch (M9): live Markdown preview pane next to this textarea. Postponed on purpose. */}
+            {form.contextUpdatedAt && (
+              <p className="mt-1 font-mono text-xs text-text-muted">
+                Last updated {timeAgo(form.contextUpdatedAt)}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <label htmlFor="task-context-tool" className={LABEL}>AI tool (optional)</label>
+            <select
+              id="task-context-tool"
+              value={form.contextTool ?? ''}
+              onChange={set('contextTool')}
+              className={FIELD}
+            >
+              <option value="">Not set</option>
+              {AI_TOOLS.map((tool) => (
+                <option key={tool} value={tool}>{tool}</option>
+              ))}
+            </select>
           </div>
 
           <p className="font-mono text-xs text-text-muted">Created {form.createdDate}</p>

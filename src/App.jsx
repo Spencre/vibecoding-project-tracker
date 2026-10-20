@@ -3,6 +3,7 @@ import Board from './components/Board.jsx';
 import TaskModal from './components/TaskModal.jsx';
 import DueLegend from './components/DueLegend.jsx';
 import TeamStrip from './components/TeamStrip.jsx';
+import { CONTEXT_TEMPLATE } from './utils/context.js';
 import Toast from './components/Toast.jsx';
 
 /**
@@ -85,13 +86,49 @@ function isoDay(offset = 0) {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }
 
+// ISO timestamp `hours` ago, for the seed tasks' "last updated" hint.
+function hoursAgo(hours) {
+  return new Date(Date.now() - hours * 3600 * 1000).toISOString();
+}
+
 // Mock tasks shown on first load (PRD §5 task shape).
 function seedTasks() {
   const base = { assignee: TEAM[0], createdDate: isoDay(0), context: '', contextTool: null, contextUpdatedAt: null };
   return [
     { ...base, id: 't-1', title: 'Design the board layout', description: 'Four columns, dark theme from DESIGN.md.', type: 'feature', status: 'done', dueDate: isoDay(-2) },
-    { ...base, id: 't-2', title: 'Build the add / edit modal', description: 'Every task field, status dropdown, delete button.', type: 'feature', status: 'in-progress', dueDate: isoDay(0) },
-    { ...base, id: 't-3', assignee: TEAM[1], title: 'Fix card text overflow', description: 'Long titles break the card layout.', type: 'bug', status: 'review', dueDate: isoDay(-1) },
+    { ...base, id: 't-2', title: 'Build the add / edit modal', description: 'Every task field, status dropdown, delete button.', type: 'feature', status: 'in-progress', dueDate: isoDay(0),
+      context: `## Context
+
+**Background**
+The board needs add, edit and delete without leaving the page. Tasks live in localStorage.
+
+**Constraints**
+- React + Tailwind only, no extra libraries.
+- Follow DESIGN.md colours and microcopy.
+
+**Tried so far**
+A single modal for both add and edit works well; a separate edit page felt slow.
+
+**Pick up**
+Check the delete confirmation wording and keyboard focus order.
+`,
+      contextTool: 'Claude', contextUpdatedAt: hoursAgo(2) },
+    { ...base, id: 't-3', assignee: TEAM[1], title: 'Fix card text overflow', description: 'Long titles break the card layout.', type: 'bug', status: 'review', dueDate: isoDay(-1),
+      context: `## Context
+
+**Background**
+Long task titles push the type badge off the card.
+
+**Constraints**
+Do not change the card width; the columns are a fixed grid.
+
+**Tried so far**
+\`truncate\` hid the title, which is worse. Wrapping the title next to the badge looks right.
+
+**Pick up**
+Test with a 120-character title and with no due date.
+`,
+      contextTool: 'ChatGPT', contextUpdatedAt: hoursAgo(26) },
     { ...base, id: 't-4', assignee: TEAM[2], title: 'Write the Copy Context template', description: 'Title, description and context as a clean briefing.', type: 'feature', status: 'todo', dueDate: isoDay(4) },
   ];
 }
@@ -107,7 +144,7 @@ function blankTask() {
     assignee: TEAM[0],
     dueDate: null,
     createdDate: isoDay(0),
-    context: '',
+    context: CONTEXT_TEMPLATE,
     contextTool: null,
     contextUpdatedAt: null,
   };
