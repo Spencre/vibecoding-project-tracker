@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import Board from './components/Board.jsx';
 
 /**
  * Vibecoding Project Tracker — starter scaffold.
@@ -44,7 +45,7 @@ export const STAGES = [
 
 // Replace these placeholders with the three names from PRD §8 before M4.
 // They become the only valid values for `Task.assignee`.
-export const TEAM = ['Teammate A', 'Teammate B', 'Teammate C'];
+export const TEAM = ['Spencer Snowden'];
 
 /**
  * A tiny localStorage hook — survives reloads, no library needed.
@@ -73,9 +74,27 @@ export function useLocalStorage(key, initialValue) {
   return [value, setValue];
 }
 
+// ISO date 'YYYY-MM-DD', `offset` days from today (so the demo data never goes stale).
+function isoDay(offset = 0) {
+  const d = new Date();
+  d.setDate(d.getDate() + offset);
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+
+// Mock tasks shown on first load (PRD §5 task shape).
+function seedTasks() {
+  const base = { assignee: TEAM[0], createdDate: isoDay(0), context: '', contextTool: null, contextUpdatedAt: null };
+  return [
+    { ...base, id: 't-1', title: 'Design the board layout', description: 'Four columns, dark theme from DESIGN.md.', type: 'feature', status: 'done', dueDate: isoDay(-1) },
+    { ...base, id: 't-2', title: 'Build the add / edit modal', description: 'Every task field, status dropdown, delete button.', type: 'feature', status: 'in-progress', dueDate: isoDay(1) },
+    { ...base, id: 't-3', title: 'Fix card text overflow', description: 'Long titles break the card layout.', type: 'bug', status: 'review', dueDate: isoDay(3) },
+    { ...base, id: 't-4', title: 'Write the Copy Context template', description: 'Title, description and context as a clean briefing.', type: 'feature', status: 'todo', dueDate: null },
+  ];
+}
+
 export default function App() {
-  // TODO M4 data-model:
-  //   const [tasks, setTasks] = useLocalStorage('vibetracker.tasks', [/* 3-4 seed tasks */]);
+  const [tasks] = useLocalStorage('vibetracker.tasks', seedTasks());
   //
   // TODO M5 crud-modal:
   //   const [editing, setEditing] = useState(null);
@@ -91,27 +110,15 @@ export default function App() {
             Vibecoding Project Tracker
           </h1>
           <p className="text-sm text-text-muted">
-            {/* Replace this line with your team name from PRD §11. */}
-            Team starter
+            Spencer Snowden
           </p>
         </div>
       </header>
 
       {/* TODO M11 anchors: render the Anchor Board (Presentation / Demo / Report / Documentation) above the board. */}
 
-      {/*
-        TODO M4 data-model:
-          Render a Kanban board with the four columns from STAGES.
-          Each column should display the tasks whose status matches its id.
-          Pre-populate 3-4 mock tasks so the board isn't empty on first load.
-
-        TODO M5 crud-modal:
-          Add a "+" button that opens a modal with every Task field.
-          Clicking a card should open the same modal in edit mode.
-      */}
-      <main className="flex h-64 items-center justify-center rounded-lg border-2 border-dashed border-text-muted/40 text-text-muted">
-        Build the four-column board here · M4
-      </main>
+      {/* TODO M5 crud-modal: "+" button and edit-on-click modal go here. */}
+      <Board stages={STAGES} tasks={tasks} />
     </div>
   );
 }
