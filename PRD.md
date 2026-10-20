@@ -95,9 +95,9 @@ Fill these in before tagging `prd-done`:
 
 | Slot | Name | GitHub handle |
 |---|---|---|
-| Teammate A | `<TODO>` | `<TODO>` |
-| Teammate B | `<TODO>` | `<TODO>` |
-| Teammate C | `<TODO>` | `<TODO>` |
+| Teammate A | `Spencer Snowden` | `Spencre` |
+| Teammate B | `Spencer Snowden1` | `Spencre1` |
+| Teammate C | `Spencer Snowden2` | `Spencre2` |
 
 These three names become the **only** allowed values for `Task.assignee`. No auth — just a dropdown.
 
@@ -107,17 +107,17 @@ Fill in the owner column. Recommended default in **bold**; change if your team h
 
 | # | Tag | Title | Suggested owner | Final owner |
 |---|---|---|---|---|
-| 3 | `design-done` | Design system + voice (DESIGN.md) | **B** | `<TODO>` |
-| 4 | `data-model` | Task model + board view | **A** | `<TODO>` |
-| 5 | `crud-modal` | Add / edit / delete modal | **A** | `<TODO>` |
-| 6 | `tag-style` | Feature / bug colors | **B** | `<TODO>` |
-| 7 | `task-owner` | Owner indicator + handoff | **A** | `<TODO>` |
-| 8 | `due-tint` | Due-date color tinting | **B** | `<TODO>` |
-| 9 | `context` | Context field on the task modal | **C** | `<TODO>` |
-| 10 | `copy-prompt` | "Copy as Prompt Context" button | **C** | `<TODO>` |
-| 11 | `anchors` | Deliverable Anchor Board | **B** | `<TODO>` |
-| 12 | `secret-sauce` | The one thing that makes it yours | **C / All** | `<TODO>` |
-| 13 | `pitch-ready` | Demo + pitch rehearsal | **All** | `<TODO>` |
+| 3 | `design-done` | Design system + voice (DESIGN.md) | **B** | `Spencer Snowden` |
+| 4 | `data-model` | Task model + board view | **A** | `Spencer Snowden` |
+| 5 | `crud-modal` | Add / edit / delete modal | **A** | `Spencer Snowden` |
+| 6 | `tag-style` | Feature / bug colors | **B** | `Spencer Snowden` |
+| 7 | `task-owner` | Owner indicator + handoff | **A** | `Spencer Snowden` |
+| 8 | `due-tint` | Due-date color tinting | **B** | `Spencer Snowden` |
+| 9 | `context` | Context field on the task modal | **C** | `Spencer Snowden` |
+| 10 | `copy-prompt` | "Copy as Prompt Context" button | **C** | `Spencer Snowden` |
+| 11 | `anchors` | Deliverable Anchor Board | **B** | `Spencer Snowden` |
+| 12 | `secret-sauce` | The one thing that makes it yours | **C / All** | `Spencer Snowden` |
+| 13 | `pitch-ready` | Demo + pitch rehearsal | **All** | `Spencer Snowden` |
 
 
 Track A owns the state model and task ownership. Track B owns the visuals (and design — M3 runs parallel to M2 so the team starts Phase 3 with the palette already chosen). Track C owns the differentiator features (M9 + M10 — the context field and the Copy-as-Prompt button) and usually leads on M12 secret-sauce. Put your strongest prompter on Track C.
@@ -143,9 +143,9 @@ Keep the Context field of each real task up to date as you work. By the end of t
 
 Fill in:
 
-- **Team name:** `<TODO>`
-- **Tagline (one sentence):** `<TODO>`
-- **Tracker URL after deploy:** `<TODO>` (Vercel will give it to you)
+- **Team name:** `Spencer Snowden`
+- **Tagline (one sentence):** `Track your vibecoding tasks, and never lose the prompt that built them.`
+- **Tracker URL after deploy:** `not yet...` (Vercel will give it to you)
 
 ## 12. Out of scope (do not build)
 
@@ -163,6 +163,45 @@ The hackathon is "done" when all 13 milestone tags are pushed to your repo and v
 - The board loads on Vercel without errors.
 - The "Copy as Prompt Context" demo works on stage.
 - 5 min pitch is rehearsed.
+
+## 14. Data requirements
+
+Source tags: *Client* = kickoff session and Q&A, *Mn slide* = milestone slides, *Assessment* = module proforma.
+
+- Each task is a story/card with an id, title, description, type (feature / bug), status, assignee, due date and created date (see §5). *(Client; M4 slide)*
+- Each task stores **AI context**: sub-requirements for a feature, or the error output for a bug, so it can be handed to an AI tool as-is. This is the differentiator versus GitLab / Trello / Jira. *(Client)*
+- Each task also stores the **AI tool** used (Claude, ChatGPT, Cursor, Lovable, Replit or Other) and a **last-updated timestamp** that is set automatically when the context is edited. *(M9 slide)*
+- User info: **name, email and GitHub account** per team member. Extends §5/§8, where `assignee` is a name only: keep `Task.assignee` as the name and store the other fields on the team member record. *(Client Q&A)*
+- Four deliverable slots (Presentation, Demo, Report, Documentation), each holding one URL. *(M11 slide; see `Anchor` in §5)*
+- 3–4 mock tasks are loaded on first use so the board is never empty. *(M4 slide)*
+- All data persists between sessions in localStorage (see §6). *(M5 slide)*
+
+## 15. Functional requirements
+
+1. Kanban board with columns **To Do, In Progress, Review, Done**; tasks are categorised by column. *(Client)*
+2. Add a task with a "+" button. *(Client; M5 slide)*
+3. Click a card to open the same form pre-filled, to edit or delete the task. *(Client; M5 slide)*
+4. Change a task's status from a dropdown in that form (no drag-and-drop required). *(M5 slide)*
+5. Optional due date on a task. *(Client)*
+6. Due-date colour tint, updating automatically: more than 2 days out is calm, less than 24 hours is a warning, past due is an alarm, done is neutral. Open decision: the slides do not define 24–48 hours out. *(M8 slide)*
+7. Features and bugs are visually distinct by colour (e.g. bug = red, feature = green) and a small corner icon, used consistently on the board, in the form and anywhere else a task appears. *(Client; M6 slide)*
+8. Task owner shown on each card with initials or an avatar, plus a "Hand off to…" dropdown that reassigns the task and acknowledges it visually. *(M7 slide)*
+9. A Markdown **Context** field on each task, pre-filled with a template (Background / Constraints / Tried so far / Pick up), an optional AI tool dropdown, and a "last updated" hint. *(Client; M9 slide)*
+10. A **Copy Context** button on every card and inside the form. It copies the title, description and full context to the clipboard, formatted so it reads as a clean briefing in any AI chat. *(M10 slide)*
+11. An **Anchor Board** pinned above the Kanban with four cards (Presentation, Demo, Report, Documentation). Each has one URL field and a status dot that changes when a link is added, and the links survive a reload. *(M11 slide)*
+12. One original "secret sauce" feature chosen by the team, visible in the demo (examples from the slide: drag-and-drop, collapsible content, sounds). *(M12 slide)*
+13. Stretch, not required: a live Markdown preview next to the Context field, and a "Copied to clipboard!" toast. *(M9, M10 slides)*
+
+## 16. Non-functional requirements
+
+- **Web-based**, built with a leading web framework (React + Vite + Tailwind, see §6). Any visual design is allowed. *(Client)*
+- **Single team:** one instance serves one team and shows only that team's board; no multi-team support. *(Client Q&A)*
+- **Security:** no cybersecurity requirements at this stage. Login is an optional extra feature, not required for the hackathon; if added, it supersedes the "Authentication" exclusion in §12. *(Client)*
+- **Deployment:** deploy to Vercel. The client said deploying is optional as long as the tool can be demonstrated on a laptop, but the assessment requires a link the marker can open. *(Client; Assessment)*
+- **No sign-in or registration** is needed to open and use the prototype. *(Assessment)*
+- **Desktop only:** mobile layouts are out of scope (see §12). *(Starter PRD)*
+- **Reliability of data:** closing and reopening the browser keeps everything intact. *(M5 slide)*
+- **Readability:** task type and due-date state must be understandable by icon or label as well as colour. *(Suggested UX principle, not a client requirement)*
 
 ---
 
