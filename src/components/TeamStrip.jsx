@@ -3,7 +3,7 @@ import Avatar from './Avatar.jsx';
 /** Optional M7 strip: what each team member is currently driving. */
 export default function TeamStrip({ team, tasks }) {
   return (
-    <section aria-label="Team workload" className="mb-4 flex flex-wrap gap-3">
+    <section aria-label="Team workload" className="flex flex-wrap gap-3">
       {team.map((name) => {
         const mine = tasks.filter((task) => task.assignee === name);
         const inProgress = mine.filter((task) => task.status === 'in-progress').length;

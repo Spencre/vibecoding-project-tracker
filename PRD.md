@@ -183,7 +183,7 @@ Source tags: *Client* = kickoff session and Q&A, *Mn slide* = milestone slides, 
 3. Click a card to open the same form pre-filled, to edit or delete the task. *(Client; M5 slide)*
 4. Change a task's status from a dropdown in that form (no drag-and-drop required). *(M5 slide)*
 5. Optional due date on a task. *(Client)*
-6. Due-date colour tint, updating automatically: more than 2 days out is calm, less than 24 hours is a warning, past due is an alarm, done is neutral. Open decision: the slides do not define 24–48 hours out. *(M8 slide)*
+6. Due-date colour tint, updating automatically: more than 24 hours left is calm, less than 24 hours is a warning, past due is an alarm, done is neutral. The slides only define "more than 2 days", so 24–48 hours out is treated as calm (decision made with the project owner). A due date means the end of that day. *(M8 slide)*
 7. Features and bugs are visually distinct by colour (e.g. bug = red, feature = green) and a small corner icon, used consistently on the board, in the form and anywhere else a task appears. *(Client; M6 slide)*
 8. Task owner shown on each card with initials or an avatar, plus a "Hand off to…" dropdown that reassigns the task and acknowledges it visually. *(M7 slide)*
 9. A Markdown **Context** field on each task, pre-filled with a template (Background / Constraints / Tried so far / Pick up), an optional AI tool dropdown, and a "last updated" hint. *(Client; M9 slide)*

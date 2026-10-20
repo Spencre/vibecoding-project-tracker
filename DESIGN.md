@@ -64,8 +64,8 @@ Column colours sit on the column (top border, header dot). Task type sits on the
 
 | Token | Hex | When used |
 |---|---|---|
-| `due-safe` | `#14B8A6` | More than 2 days out |
-| `due-warning` | `#F59E0B` | Less than 24 hours |
+| `due-safe` | `#14B8A6` | More than 24 hours left (the slides only define "more than 2 days", so 24–48 hours is calm too) |
+| `due-warning` | `#F59E0B` | Less than 24 hours left (a due date means the end of that day, so this is "due today") |
 | `due-overdue` | `#EF4444` | Past due (border / tint only; text on it uses `text-primary`) |
 | `due-neutral` | `#64748B` | Done (overrides date) |
 

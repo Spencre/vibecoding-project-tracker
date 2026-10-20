@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import Board from './components/Board.jsx';
 import TaskModal from './components/TaskModal.jsx';
+import DueLegend from './components/DueLegend.jsx';
 import TeamStrip from './components/TeamStrip.jsx';
 import Toast from './components/Toast.jsx';
 
@@ -88,10 +89,10 @@ function isoDay(offset = 0) {
 function seedTasks() {
   const base = { assignee: TEAM[0], createdDate: isoDay(0), context: '', contextTool: null, contextUpdatedAt: null };
   return [
-    { ...base, id: 't-1', title: 'Design the board layout', description: 'Four columns, dark theme from DESIGN.md.', type: 'feature', status: 'done', dueDate: isoDay(-1) },
-    { ...base, id: 't-2', title: 'Build the add / edit modal', description: 'Every task field, status dropdown, delete button.', type: 'feature', status: 'in-progress', dueDate: isoDay(1) },
-    { ...base, id: 't-3', assignee: TEAM[1], title: 'Fix card text overflow', description: 'Long titles break the card layout.', type: 'bug', status: 'review', dueDate: isoDay(3) },
-    { ...base, id: 't-4', assignee: TEAM[2], title: 'Write the Copy Context template', description: 'Title, description and context as a clean briefing.', type: 'feature', status: 'todo', dueDate: null },
+    { ...base, id: 't-1', title: 'Design the board layout', description: 'Four columns, dark theme from DESIGN.md.', type: 'feature', status: 'done', dueDate: isoDay(-2) },
+    { ...base, id: 't-2', title: 'Build the add / edit modal', description: 'Every task field, status dropdown, delete button.', type: 'feature', status: 'in-progress', dueDate: isoDay(0) },
+    { ...base, id: 't-3', assignee: TEAM[1], title: 'Fix card text overflow', description: 'Long titles break the card layout.', type: 'bug', status: 'review', dueDate: isoDay(-1) },
+    { ...base, id: 't-4', assignee: TEAM[2], title: 'Write the Copy Context template', description: 'Title, description and context as a clean briefing.', type: 'feature', status: 'todo', dueDate: isoDay(4) },
   ];
 }
 
@@ -118,6 +119,12 @@ export default function App() {
   const [editing, setEditing] = useState(null);
   // Short confirmation message (e.g. after a hand-off); clears itself.
   const [toast, setToast] = useState(null);
+  // Re-render once a minute so due-date colours keep up with the clock (M8).
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    const timer = setInterval(() => setTick((n) => n + 1), 60000);
+    return () => clearInterval(timer);
+  }, []);
   //
   // TODO M11 anchors:
   //   const [anchors, setAnchors] = useLocalStorage('vibetracker.anchors', [...]);
@@ -171,7 +178,10 @@ export default function App() {
 
       {/* TODO M11 anchors: render the Anchor Board (Presentation / Demo / Report / Documentation) above the board. */}
 
-      <TeamStrip team={TEAM} tasks={tasks} />
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <TeamStrip team={TEAM} tasks={tasks} />
+        <DueLegend />
+      </div>
 
       <Board stages={STAGES} tasks={tasks} team={TEAM} onOpen={setEditing} onHandOff={handOff} />
 
