@@ -21,6 +21,12 @@ export default {
           feature: '#10B981', // emerald
           bug: '#FB7185',     // rose
         },
+        stage: {
+          todo: '#94A3B8',     // slate
+          progress: '#38BDF8', // sky
+          review: '#A78BFA',   // violet
+          done: '#4ADE80',     // green
+        },
         due: {
           safe: '#14B8A6',    // > 2 days out
           warning: '#F59E0B', // < 24 hours

@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Board from './components/Board.jsx';
+import TaskModal from './components/TaskModal.jsx';
 
 /**
  * Vibecoding Project Tracker — starter scaffold.
@@ -93,14 +94,46 @@ function seedTasks() {
   ];
 }
 
+// A blank task for the "+ Task" form (PRD §5 task shape).
+function blankTask() {
+  return {
+    id: '',
+    title: '',
+    description: '',
+    type: 'feature',
+    status: 'todo',
+    assignee: TEAM[0],
+    dueDate: null,
+    createdDate: isoDay(0),
+    context: '',
+    contextTool: null,
+    contextUpdatedAt: null,
+  };
+}
+
 export default function App() {
-  const [tasks] = useLocalStorage('vibetracker.tasks', seedTasks());
-  //
-  // TODO M5 crud-modal:
-  //   const [editing, setEditing] = useState(null);
+  const [tasks, setTasks] = useLocalStorage('vibetracker.tasks', seedTasks());
+  // The task open in the modal (null = closed). `id === ''` means a new task.
+  const [editing, setEditing] = useState(null);
   //
   // TODO M11 anchors:
   //   const [anchors, setAnchors] = useLocalStorage('vibetracker.anchors', [...]);
+
+  const closeModal = useCallback(() => setEditing(null), []);
+
+  const saveTask = (task) => {
+    setTasks((current) =>
+      task.id
+        ? current.map((t) => (t.id === task.id ? task : t))
+        : [...current, { ...task, id: `t-${Date.now()}` }]
+    );
+    setEditing(null);
+  };
+
+  const deleteTask = (id) => {
+    setTasks((current) => current.filter((t) => t.id !== id));
+    setEditing(null);
+  };
 
   return (
     <div className="min-h-screen p-6">
@@ -113,12 +146,31 @@ export default function App() {
             Spencer Snowden
           </p>
         </div>
+        <button
+          type="button"
+          onClick={() => setEditing(blankTask())}
+          className="rounded-md bg-brand-primary px-4 py-2 text-sm font-medium text-white hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-brand-accent"
+        >
+          + Task
+        </button>
       </header>
 
       {/* TODO M11 anchors: render the Anchor Board (Presentation / Demo / Report / Documentation) above the board. */}
 
-      {/* TODO M5 crud-modal: "+" button and edit-on-click modal go here. */}
-      <Board stages={STAGES} tasks={tasks} />
+      <Board stages={STAGES} tasks={tasks} onOpen={setEditing} />
+
+      {editing && (
+        <TaskModal
+          key={editing.id || 'new'}
+          task={editing}
+          isNew={!editing.id}
+          stages={STAGES}
+          team={TEAM}
+          onSave={saveTask}
+          onDelete={deleteTask}
+          onClose={closeModal}
+        />
+      )}
     </div>
   );
 }

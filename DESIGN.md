@@ -40,6 +40,19 @@ Contrast was checked against `surface-card` (WCAG: 4.5:1 for text, 3:1 for borde
 | `text-primary` | `#E2E8F0` | Body text (11.9:1) |
 | `text-muted` | `#94A3B8` | Captions, dates, counts (5.7:1) |
 
+### Board columns (M4 `data-model`)
+
+Each column has a coloured top border and a dot beside its name. The column background stays neutral: a tint of sky or violet just blends into the navy page. The label stays the primary signal.
+
+| Token | Hex | Column |
+|---|---|---|
+| `stage-todo` | `#94A3B8` | To Do |
+| `stage-progress` | `#38BDF8` | In Progress |
+| `stage-review` | `#A78BFA` | Review |
+| `stage-done` | `#4ADE80` | Done |
+
+Column colours sit on the column (top border, header dot). Task type sits on the card (left stripe), and due state is a card tint, so green for `Done` and green for `feature` never share a place.
+
 ### Task type (M6 `tag-style`)
 
 | Token | Hex | When used |
