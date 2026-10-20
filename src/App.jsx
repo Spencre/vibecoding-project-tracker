@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import AnchorBoard from './components/AnchorBoard.jsx';
 import Board from './components/Board.jsx';
 import TaskModal from './components/TaskModal.jsx';
 import DueLegend from './components/DueLegend.jsx';
@@ -135,6 +136,14 @@ Test with a 120-character title and with no due date.
   ];
 }
 
+// The four pinned deliverable slots (PRD §5 `Anchor`). A url of null means "nothing linked yet".
+const DEFAULT_ANCHORS = [
+  { id: 'presentation', label: 'Presentation', url: null },
+  { id: 'demo', label: 'Demo', url: null },
+  { id: 'report', label: 'Report', url: null },
+  { id: 'documentation', label: 'Documentation', url: null },
+];
+
 // A blank task for the "+ Task" form (PRD §5 task shape).
 function blankTask() {
   return {
@@ -156,6 +165,7 @@ export default function App() {
   const [tasks, setTasks] = useLocalStorage('vibetracker.tasks', seedTasks());
   // The task open in the modal (null = closed). `id === ''` means a new task.
   const [editing, setEditing] = useState(null);
+  const [anchors, setAnchors] = useLocalStorage('vibetracker.anchors', DEFAULT_ANCHORS);
   // Short confirmation message (e.g. after a hand-off); clears itself.
   const [toast, setToast] = useState(null);
   // Re-render once a minute so due-date colours keep up with the clock (M8).
@@ -164,9 +174,6 @@ export default function App() {
     const timer = setInterval(() => setTick((n) => n + 1), 60000);
     return () => clearInterval(timer);
   }, []);
-  //
-  // TODO M11 anchors:
-  //   const [anchors, setAnchors] = useLocalStorage('vibetracker.anchors', [...]);
 
   const closeModal = useCallback(() => setEditing(null), []);
 
@@ -189,6 +196,9 @@ export default function App() {
     setTasks((current) => current.filter((t) => t.id !== id));
     setEditing(null);
   };
+
+  const setAnchorUrl = (id, url) =>
+    setAnchors((current) => current.map((a) => (a.id === id ? { ...a, url } : a)));
 
   const copyContext = async (task) => {
     const copied = await copyText(buildBriefing(task, STAGES));
@@ -223,7 +233,7 @@ export default function App() {
         </button>
       </header>
 
-      {/* TODO M11 anchors: render the Anchor Board (Presentation / Demo / Report / Documentation) above the board. */}
+      <AnchorBoard anchors={anchors} onChange={setAnchorUrl} />
 
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <TeamStrip team={TEAM} tasks={tasks} />
