@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import Avatar from './Avatar.jsx';
 import CopyButton from './CopyButton.jsx';
 import TypeBadge, { TYPE_STYLES } from './TypeBadge.jsx';
@@ -8,20 +9,31 @@ import { DUE_STYLES, dueLabel, getDueState } from '../utils/due.js';
  * The title is a real button (stretched over the card) so it works by keyboard too.
  * Anything else interactive on the card needs `relative z-10` so it sits above that
  * stretched title (the Copy Context button and the hand-off dropdown here).
+ * Cards can be dragged to another column (M12); the status dropdown in the modal is the
+ * keyboard-friendly alternative.
  * The card tint and date label come from the due date (M8, see utils/due.js); the left
  * stripe is the feature / bug colour (M6).
  */
 export default function TaskCard({ task, team, onOpen, onHandOff, onCopy }) {
   const others = team.filter((name) => name !== task.assignee);
+  const [dragging, setDragging] = useState(false);
   const dueState = getDueState(task);
   const due = DUE_STYLES[dueState];
   const label = dueLabel(task, dueState);
 
   return (
     <article
-      className={`relative rounded-md border border-l-4 p-3 transition-shadow hover:shadow-lg hover:shadow-black/30 ${
+      draggable
+      onDragStart={(e) => {
+        // The task id travels with the drag; the column it is dropped on moves the task.
+        e.dataTransfer.setData('text/plain', task.id);
+        e.dataTransfer.effectAllowed = 'move';
+        setDragging(true);
+      }}
+      onDragEnd={() => setDragging(false)}
+      className={`relative cursor-grab rounded-md border border-l-4 p-3 transition-shadow hover:shadow-lg hover:shadow-black/30 active:cursor-grabbing ${
         due.card
-      } ${(TYPE_STYLES[task.type] ?? TYPE_STYLES.feature).stripe}`}
+      } ${(TYPE_STYLES[task.type] ?? TYPE_STYLES.feature).stripe} ${dragging ? 'opacity-40' : ''}`}
     >
       <div className="flex items-start justify-between gap-2">
         <h3 className="text-sm font-medium text-text-primary">

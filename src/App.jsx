@@ -208,6 +208,15 @@ export default function App() {
     });
   };
 
+  // Drag-and-drop (M12): the dropped card's id arrives from the column it was dropped on.
+  const moveTask = (id, status) => {
+    const task = tasks.find((t) => t.id === id);
+    if (!task || task.status === status) return;
+    setTasks((current) => current.map((t) => (t.id === id ? { ...t, status } : t)));
+    const label = STAGES.find((stage) => stage.id === status)?.label ?? status;
+    setToast({ text: `Moved to ${label}.`, key: Date.now() });
+  };
+
   const handOff = (id, name) => {
     setTasks((current) => current.map((t) => (t.id === id ? { ...t, assignee: name } : t)));
     setToast({ text: `Handed off to ${name}.`, key: Date.now() });
@@ -247,6 +256,7 @@ export default function App() {
         onOpen={setEditing}
         onHandOff={handOff}
         onCopy={copyContext}
+        onMove={moveTask}
       />
 
       {toast && <Toast key={toast.key} message={toast.text} />}

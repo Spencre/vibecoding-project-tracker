@@ -190,6 +190,7 @@ Source tags: *Client* = kickoff session and Q&A, *Mn slide* = milestone slides, 
 10. A **Copy Context** button on every card and inside the form. It copies the title, description and full context to the clipboard, formatted so it reads as a clean briefing in any AI chat. *(M10 slide)*
 11. An **Anchor Board** pinned above the Kanban with four cards (Presentation, Demo, Report, Documentation). Each has one URL field and a status dot that changes when a link is added, and the links survive a reload. *(M11 slide)*
 12. One original "secret sauce" feature chosen by the team, visible in the demo (examples from the slide: drag-and-drop, collapsible content, sounds). *(M12 slide)*
+    - **Chosen: drag a card to another column to change its status.** Why: moving a task is the most frequent action on a Kanban board, and the status dropdown in the modal takes four steps (open, change, save, close); dragging takes one. It supports the core problem of keeping a shared, current view of task state (§1). The dropdown stays as the keyboard-accessible alternative, and a toast ("Moved to Review.") confirms the move.
 13. Stretch, not required: a live Markdown preview next to the Context field, and a "Copied to clipboard!" toast. *(M9, M10 slides)*
 
 ## 16. Non-functional requirements

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import TaskCard from './TaskCard.jsx';
 
 // Full class names so Tailwind can see them. Colours live in tailwind.config.js (stage.*).
@@ -9,12 +10,29 @@ const STAGE_STYLES = {
 };
 
 /** One Kanban column: a stage header with a count, and its task cards. */
-export default function Column({ stage, tasks, team, onOpen, onHandOff, onCopy }) {
+export default function Column({ stage, tasks, team, onOpen, onHandOff, onCopy, onMove }) {
   const style = STAGE_STYLES[stage.id];
+  // True while a card is being dragged over this column, so it can show where it will land.
+  const [dragOver, setDragOver] = useState(false);
   return (
     <section
       aria-label={stage.label}
-      className={`flex min-h-[24rem] flex-col rounded-lg border border-t-4 border-text-muted/20 bg-surface-card/40 p-3 ${style.column}`}
+      onDragOver={(e) => {
+        e.preventDefault(); // allow dropping here
+        e.dataTransfer.dropEffect = 'move';
+        setDragOver(true);
+      }}
+      onDragLeave={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget)) setDragOver(false);
+      }}
+      onDrop={(e) => {
+        e.preventDefault();
+        setDragOver(false);
+        onMove(e.dataTransfer.getData('text/plain'), stage.id);
+      }}
+      className={`flex min-h-[24rem] flex-col rounded-lg border border-t-4 border-text-muted/20 bg-surface-card/40 p-3 transition-shadow ${style.column} ${
+        dragOver ? 'ring-2 ring-brand-accent' : ''
+      }`}
     >
       <header className="mb-3 flex items-center justify-between">
         <h2 className="flex items-center gap-2 text-base font-semibold uppercase tracking-wide text-text-primary">
