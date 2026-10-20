@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import CopyButton from './CopyButton.jsx';
 import TypeBadge, { TYPE_STYLES } from './TypeBadge.jsx';
 import { AI_TOOLS, CONTEXT_TEMPLATE } from '../utils/context.js';
 import { timeAgo } from '../utils/time.js';
@@ -11,7 +12,7 @@ const LABEL = 'mb-1 block text-xs font-medium text-text-muted';
  * Add / edit / delete modal. Same form for both: `isNew` decides the title,
  * whether the Delete button shows, and whether Save creates or updates.
  */
-export default function TaskModal({ task, isNew, stages, team, onSave, onDelete, onClose }) {
+export default function TaskModal({ task, isNew, stages, team, onSave, onDelete, onClose, onCopy }) {
   const [form, setForm] = useState(task);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const titleRef = useRef(null);
@@ -136,6 +137,7 @@ export default function TaskModal({ task, isNew, stages, team, onSave, onDelete,
               <label htmlFor="task-context" className="text-xs font-medium text-text-muted">
                 Context
               </label>
+              <div className="flex items-center gap-3">
               {form.context.trim() === '' && (
                 <button
                   type="button"
@@ -145,6 +147,9 @@ export default function TaskModal({ task, isNew, stages, team, onSave, onDelete,
                   Insert template
                 </button>
               )}
+              {/* Copies what is in the form right now, including unsaved edits. */}
+              <CopyButton onClick={() => onCopy(form)} />
+              </div>
             </div>
             <textarea
               id="task-context"

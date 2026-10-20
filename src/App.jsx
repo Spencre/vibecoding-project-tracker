@@ -3,6 +3,8 @@ import Board from './components/Board.jsx';
 import TaskModal from './components/TaskModal.jsx';
 import DueLegend from './components/DueLegend.jsx';
 import TeamStrip from './components/TeamStrip.jsx';
+import { buildBriefing } from './utils/briefing.js';
+import { copyText } from './utils/clipboard.js';
 import { CONTEXT_TEMPLATE } from './utils/context.js';
 import Toast from './components/Toast.jsx';
 
@@ -188,6 +190,14 @@ export default function App() {
     setEditing(null);
   };
 
+  const copyContext = async (task) => {
+    const copied = await copyText(buildBriefing(task, STAGES));
+    setToast({
+      text: copied ? 'Copied. Paste it into your AI.' : "Couldn't copy. Select the text and copy it yourself.",
+      key: Date.now(),
+    });
+  };
+
   const handOff = (id, name) => {
     setTasks((current) => current.map((t) => (t.id === id ? { ...t, assignee: name } : t)));
     setToast({ text: `Handed off to ${name}.`, key: Date.now() });
@@ -220,7 +230,14 @@ export default function App() {
         <DueLegend />
       </div>
 
-      <Board stages={STAGES} tasks={tasks} team={TEAM} onOpen={setEditing} onHandOff={handOff} />
+      <Board
+        stages={STAGES}
+        tasks={tasks}
+        team={TEAM}
+        onOpen={setEditing}
+        onHandOff={handOff}
+        onCopy={copyContext}
+      />
 
       {toast && <Toast key={toast.key} message={toast.text} />}
 
@@ -234,6 +251,7 @@ export default function App() {
           onSave={saveTask}
           onDelete={deleteTask}
           onClose={closeModal}
+          onCopy={copyContext}
         />
       )}
     </div>
