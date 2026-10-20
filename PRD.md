@@ -145,7 +145,7 @@ Fill in:
 
 - **Team name:** `Spencer Snowden`
 - **Tagline (one sentence):** `Track your vibecoding tasks, and never lose the prompt that built them.`
-- **Tracker URL after deploy:** `not yet...` (Vercel will give it to you)
+- **Tracker URL after deploy:** https://vibecoding-project-tracker-nine.vercel.app/
 
 ## 12. Out of scope (do not build)
 
