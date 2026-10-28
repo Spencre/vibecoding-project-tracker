@@ -151,15 +151,15 @@ const DEFAULT_ANCHORS = [
   { id: 'documentation', label: 'Documentation', url: null },
 ];
 
-// A blank task for the "+ Task" form (PRD §5 task shape).
-function blankTask() {
+// A blank task for the "+ Task" form (PRD §5 task shape), assigned to whoever is signed in.
+function blankTask(assignee) {
   return {
     id: '',
     title: '',
     description: '',
     type: 'feature',
     status: 'todo',
-    assignee: TEAM[0],
+    assignee,
     dueDate: null,
     createdDate: isoDay(0),
     context: CONTEXT_TEMPLATE,
@@ -277,7 +277,7 @@ export default function App() {
           </button>
           <button
             type="button"
-            onClick={() => setEditing(blankTask())}
+            onClick={() => setEditing(blankTask(currentUser))}
             className="rounded-md bg-brand-primary px-4 py-2 text-sm font-medium text-white hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-brand-accent"
           >
             + Task
