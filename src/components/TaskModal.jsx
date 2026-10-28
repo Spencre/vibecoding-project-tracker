@@ -7,6 +7,9 @@ import { timeAgo } from '../utils/time.js';
 const FIELD =
   'w-full rounded-md border border-text-muted/30 bg-surface-page px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-brand-accent';
 const LABEL = 'mb-1 block text-xs font-medium text-text-muted';
+// Everything the keyboard can reach inside the dialog (for the Tab loop).
+const FOCUSABLE =
+  'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 /**
  * Add / edit / delete modal. Same form for both: `isNew` decides the title,
@@ -16,15 +19,46 @@ export default function TaskModal({ task, isNew, stages, team, onSave, onDelete,
   const [form, setForm] = useState(task);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const titleRef = useRef(null);
+  const dialogRef = useRef(null);
 
   const set = (field) => (e) => setForm((f) => ({ ...f, [field]: e.target.value }));
   const titleMissing = form.title.trim() === '';
 
   useEffect(() => {
+    // Remember where focus was, so it can go back there when the form closes.
+    const opener = document.activeElement;
     titleRef.current?.focus();
-    const onKey = (e) => e.key === 'Escape' && onClose();
+
+    const onKey = (e) => {
+      if (e.key === 'Escape') {
+        onClose();
+        return;
+      }
+      if (e.key !== 'Tab' || !dialogRef.current) return;
+      // Keep Tab and Shift+Tab looping inside the dialog.
+      const items = [...dialogRef.current.querySelectorAll(FOCUSABLE)];
+      if (items.length === 0) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+      const active = document.activeElement;
+      if (!dialogRef.current.contains(active)) {
+        e.preventDefault();
+        first.focus();
+      } else if (e.shiftKey && active === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && active === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
     window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      // Back to the card or button that opened the form; "+ Task" if it is gone.
+      if (opener && opener !== document.body && document.contains(opener)) opener.focus();
+      else document.getElementById('add-task')?.focus();
+    };
   }, [onClose]);
 
   const submit = (e) => {
@@ -47,6 +81,7 @@ export default function TaskModal({ task, isNew, stages, team, onSave, onDelete,
       onMouseDown={(e) => e.target === e.currentTarget && onClose()}
     >
       <form
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="task-modal-title"
@@ -159,7 +194,6 @@ export default function TaskModal({ task, isNew, stages, team, onSave, onDelete,
               placeholder="Background, constraints, what you've tried, where to pick up. Markdown works."
               className={`${FIELD} font-mono text-xs leading-relaxed`}
             />
-            {/* TODO stretch (M9): live Markdown preview pane next to this textarea. Postponed on purpose. */}
             {form.contextUpdatedAt && (
               <p className="mt-1 font-mono text-xs text-text-muted">
                 Last updated {timeAgo(form.contextUpdatedAt)}

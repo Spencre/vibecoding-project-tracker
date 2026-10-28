@@ -93,6 +93,9 @@ Suggested sizes (override only if the design demands it):
 - **Buttons:** Solid indigo fill, white text, no gradient, `rounded-md`; secondary buttons are outlined in `text-muted`.
 - **Modal:** Centered, `max-w-lg`, `surface-card` on a `surface-page` backdrop at 70% opacity, closes with Esc.
 - **Empty states:** Dashed border, muted text, never sad.
+- **Team strip:** One card per member, `surface-card` at low opacity with a 1px border: avatar, name in `text-primary`, then the "in progress / open" counts in `text-muted` JetBrains Mono at 12 px. Cards wrap on narrow widths. Below it, a "Team details" dropdown (outlined in `text-muted`, with a small chevron that turns when open) holds a table of name, email and GitHub handle, with email and handle in `text-muted` mono. It uses the standard focus ring.
+- **Text-size buttons:** Three small buttons in the header, labelled A, A+ and A++. The active one is filled `brand-primary` with white text, the others are outlined in `text-muted`; `aria-pressed` marks the active one. They set the root font size (100%, 112.5%, 125%) so every size scales.
+- **Skip link:** "Skip to board" is hidden until it gets keyboard focus, then shows top-left as a `brand-accent` button with `surface-page` text and a `text-primary` focus ring. Activating it moves focus to the board.
 - **Drag affordance (if used):** None for now. We use a status dropdown; drag-and-drop is a possible secret-sauce feature.
 
 ## 5. Voice / microcopy

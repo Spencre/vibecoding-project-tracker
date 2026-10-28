@@ -93,11 +93,11 @@ Four columns, in this order, with these exact labels in the UI:
 
 Fill these in before tagging `prd-done`:
 
-| Slot | Name | GitHub handle |
-|---|---|---|
-| Teammate A | `Spencer Snowden` | `Spencre` |
-| Teammate B | `Harry Potter` | demo teammate, no real account |
-| Teammate C | `Frodo Baggins` | demo teammate, no real account |
+| Slot | Name | Email | GitHub handle |
+|---|---|---|---|
+| Teammate A | `Spencer Snowden` | `spencer.snowden@cardiff.com` | `Spencre` |
+| Teammate B | `Harry Potter` | `harry.potter@cardiff.com` | demo teammate, no real account |
+| Teammate C | `Frodo Baggins` | `frodo.baggins@cardiff.com` | demo teammate, no real account |
 
 This is a solo, individual project. Teammates B and C are fictional demo personas, so the board can show hand-offs and a second and third user logging in. All real work is by Spencer Snowden.
 
@@ -173,7 +173,7 @@ Source tags: *Client* = kickoff session and Q&A, *Mn slide* = milestone slides, 
 - Each task is a story/card with an id, title, description, type (feature / bug), status, assignee, due date and created date (see §5). *(Client; M4 slide)*
 - Each task stores **AI context**: sub-requirements for a feature, or the error output for a bug, so it can be handed to an AI tool as-is. This is the differentiator versus GitLab / Trello / Jira. *(Client)*
 - Each task also stores the **AI tool** used (Claude, ChatGPT, Cursor, Lovable, Replit or Other) and a **last-updated timestamp** that is set automatically when the context is edited. *(M9 slide)*
-- User info: **name, email and GitHub account** per team member. Extends §5/§8, where `assignee` is a name only: keep `Task.assignee` as the name and store the other fields on the team member record. *(Client Q&A)*
+- User info: **name, email and GitHub account** per team member, held in a front-end team record (demo data). `Task.assignee` stays the name only. *(Client Q&A)*
 - Four deliverable slots (Presentation, Demo, Report, Documentation), each holding one URL. *(M11 slide; see `Anchor` in §5)*
 - 3–4 mock tasks are loaded on first use so the board is never empty. *(M4 slide)*
 - All data persists between sessions in localStorage (see §6). *(M5 slide)*
@@ -183,18 +183,19 @@ Source tags: *Client* = kickoff session and Q&A, *Mn slide* = milestone slides, 
 1. Kanban board with columns **To Do, In Progress, Review, Done**; tasks are categorised by column. *(Client)*
 2. Add a task with a "+" button. *(Client; M5 slide)*
 3. Click a card to open the same form pre-filled, to edit or delete the task. *(Client; M5 slide)*
-4. Change a task's status from a dropdown in that form (no drag-and-drop required). *(M5 slide)*
+4. Change a task's status from the dropdown in that form, which is also the keyboard alternative to dragging a card (item 12). *(M5 slide)*
 5. Optional due date on a task. *(Client)*
 6. Due-date colour tint, updating automatically: more than 24 hours left is calm, less than 24 hours is a warning, past due is an alarm, done is neutral. The slides only define "more than 2 days", so 24–48 hours out is treated as calm (decision made with the project owner). A due date means the end of that day. *(M8 slide)*
 7. Features and bugs are visually distinct by colour (e.g. bug = red, feature = green) and a small corner icon, used consistently on the board, in the form and anywhere else a task appears. *(Client; M6 slide)*
 8. Task owner shown on each card with initials or an avatar, plus a "Hand off to…" dropdown that reassigns the task and acknowledges it visually. *(M7 slide)*
 9. A Markdown **Context** field on each task, pre-filled with a template (Background / Constraints / Tried so far / Pick up), an optional AI tool dropdown, and a "last updated" hint. *(Client; M9 slide)*
-10. A **Copy Context** button on every card and inside the form. It copies the title, description and full context to the clipboard, formatted so it reads as a clean briefing in any AI chat. *(M10 slide)*
+10. A **Copy Context** button on every card and inside the form. It copies the title, description and full context to the clipboard, formatted so it reads as a clean briefing in any AI chat. A "Copied" toast confirms the copy. *(M10 slide)*
 11. An **Anchor Board** pinned above the Kanban with four cards (Presentation, Demo, Report, Documentation). Each has one URL field and a status dot that changes when a link is added, and the links survive a reload. *(M11 slide)*
 12. One original "secret sauce" feature chosen by the team, visible in the demo (examples from the slide: drag-and-drop, collapsible content, sounds). *(M12 slide)*
     - **Chosen: drag a card to another column to change its status.** Why: moving a task is the most frequent action on a Kanban board, and the status dropdown in the modal takes four steps (open, change, save, close); dragging takes one. It supports the core problem of keeping a shared, current view of task state (§1). The dropdown stays as the keyboard-accessible alternative, and a toast ("Moved to Review.") confirms the move.
-13. Stretch, not required: a live Markdown preview next to the Context field, and a "Copied to clipboard!" toast. *(M9, M10 slides)*
+13. Team panel: the team strip shows each member's name and workload, and a "Team details" dropdown shows each member's email and GitHub account. *(Client Q&A)*
 14. **Demo login (MVP).** On first load a login form shows the app name, a labelled Username field, a labelled Password field and a "Log in" button. The fields are prefilled (`spencer` and a demo password) so a marker can just press Log in, and a hint says "Demo only: no real accounts or passwords. Try: spencer, harry or frodo. Any password works." Demo usernames map to the team members in §8 (`spencer` = Spencer Snowden, `harry` = Harry Potter, `frodo` = Frodo Baggins), matched case-insensitively and ignoring spaces. The password is ignored but must not be empty. An unknown username or empty password shows an inline error and keeps what was typed. The signed-in user is stored in localStorage (`vibetracker.currentUser`), so a reload keeps them signed in. Once in, the header shows a "Signed in as" user selector, which changes user in one step, and a "Log out" button that returns to the login screen. This is a **front-end demo login with no real authentication**: no backend, no registration, and the Task data model is unchanged. It must be fully keyboard operable, with focus on the Username field when the screen appears. *(Client Q&A; lecturer guidance)*
+15. Text-size control: header buttons switch between normal, large and largest text, and the choice is remembered. *(Added; WCAG 2.2 criterion 1.4.4 Resize Text)*
 
 ## 16. Non-functional requirements
 
@@ -206,6 +207,8 @@ Source tags: *Client* = kickoff session and Q&A, *Mn slide* = milestone slides, 
 - **Desktop only:** mobile layouts are out of scope (see §12). *(Starter PRD)*
 - **Reliability of data:** closing and reopening the browser keeps everything intact. *(M5 slide)*
 - **Readability:** task type and due-date state must be understandable by icon or label as well as colour. *(Suggested UX principle, not a client requirement)*
+- **Keyboard use:** the task form keeps keyboard focus inside it while open and returns focus to where the user was when it closes. *(Added; WCAG 2.2 criterion 2.4.3 Focus Order)*
+- **Skip link:** a "Skip to board" link lets keyboard users jump past the header. *(Added; WCAG 2.2 criterion 2.4.1 Bypass Blocks)*
 
 ---
 

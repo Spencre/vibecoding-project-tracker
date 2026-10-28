@@ -9,6 +9,7 @@ import { copyText } from './utils/clipboard.js';
 import { CONTEXT_TEMPLATE } from './utils/context.js';
 import Toast from './components/Toast.jsx';
 import Login from './components/Login.jsx';
+import TextSizeControl, { TEXT_SIZES } from './components/TextSizeControl.jsx';
 
 /**
  * Vibecoding Project Tracker — starter scaffold.
@@ -53,7 +54,13 @@ export const STAGES = [
 ];
 
 // The three names from PRD §8. They are the only valid values for `Task.assignee`.
-export const TEAM = ['Spencer Snowden', 'Harry Potter', 'Frodo Baggins'];
+export const TEAM_MEMBERS = [
+  { name: 'Spencer Snowden', email: 'spencer.snowden@cardiff.com', github: 'Spencre' },
+  { name: 'Harry Potter', email: 'harry.potter@cardiff.com', github: 'harry-potter-demo' },
+  { name: 'Frodo Baggins', email: 'frodo.baggins@cardiff.com', github: 'frodo-baggins-demo' },
+];
+// Names only, so Task.assignee stays a plain name string.
+export const TEAM = TEAM_MEMBERS.map((member) => member.name);
 
 // Demo login (front-end only): lowercase username -> team member. The password is ignored.
 const USERNAMES = { spencer: TEAM[0], harry: TEAM[1], frodo: TEAM[2] };
@@ -175,6 +182,12 @@ export default function App() {
   const [anchors, setAnchors] = useLocalStorage('vibetracker.anchors', DEFAULT_ANCHORS);
   // Demo login: who is using the board. Front-end only, no real authentication.
   const [currentUser, setCurrentUser] = useLocalStorage('vibetracker.currentUser', null);
+  // Text size (accessibility): scales the root font size so every rem-based size follows.
+  const [textSize, setTextSize] = useLocalStorage('vibetracker.textSize', 'normal');
+  useEffect(() => {
+    const size = TEXT_SIZES.find((s) => s.id === textSize)?.size ?? '100%';
+    document.documentElement.style.fontSize = size;
+  }, [textSize]);
   // Short confirmation message (e.g. after a hand-off); clears itself.
   const [toast, setToast] = useState(null);
   // Re-render once a minute so due-date colours keep up with the clock (M8).
@@ -246,11 +259,22 @@ export default function App() {
 
   return (
     <div className="min-h-screen p-6">
-      <header className="mb-6 flex items-end justify-between gap-4">
+      <a
+        href="#board"
+        onClick={(e) => {
+          e.preventDefault();
+          document.getElementById('board')?.focus();
+        }}
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[70] focus:rounded-md focus:bg-brand-accent focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-surface-page focus:outline-none focus:ring-2 focus:ring-text-primary"
+      >
+        Skip to board
+      </a>
+      <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <h1 className="text-2xl font-bold text-text-primary">
           Vibecoding Project Tracker
         </h1>
         <div className="flex flex-wrap items-center justify-end gap-3">
+          <TextSizeControl value={textSize} onChange={setTextSize} />
           <div className="flex items-center gap-2">
             <label htmlFor="current-user" className="text-sm text-text-muted">
               Signed in as
@@ -276,6 +300,7 @@ export default function App() {
             Log out
           </button>
           <button
+            id="add-task"
             type="button"
             onClick={() => setEditing(blankTask(currentUser))}
             className="rounded-md bg-brand-primary px-4 py-2 text-sm font-medium text-white hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-brand-accent"
@@ -287,8 +312,8 @@ export default function App() {
 
       <AnchorBoard anchors={anchors} onChange={setAnchorUrl} />
 
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <TeamStrip team={TEAM} tasks={tasks} />
+      <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
+        <TeamStrip members={TEAM_MEMBERS} tasks={tasks} />
         <DueLegend />
       </div>
 
