@@ -247,14 +247,9 @@ export default function App() {
   return (
     <div className="min-h-screen p-6">
       <header className="mb-6 flex items-end justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-text-primary">
-            Vibecoding Project Tracker
-          </h1>
-          <p className="text-sm text-text-muted">
-            Spencer Snowden
-          </p>
-        </div>
+        <h1 className="text-2xl font-bold text-text-primary">
+          Vibecoding Project Tracker
+        </h1>
         <div className="flex flex-wrap items-center justify-end gap-3">
           <div className="flex items-center gap-2">
             <label htmlFor="current-user" className="text-sm text-text-muted">
