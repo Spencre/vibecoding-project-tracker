@@ -8,6 +8,7 @@ import { buildBriefing } from './utils/briefing.js';
 import { copyText } from './utils/clipboard.js';
 import { CONTEXT_TEMPLATE } from './utils/context.js';
 import Toast from './components/Toast.jsx';
+import Login from './components/Login.jsx';
 
 /**
  * Vibecoding Project Tracker — starter scaffold.
@@ -52,7 +53,10 @@ export const STAGES = [
 ];
 
 // The three names from PRD §8. They are the only valid values for `Task.assignee`.
-export const TEAM = ['Spencer Snowden', 'Spencer Snowden1', 'Spencer Snowden2'];
+export const TEAM = ['Spencer Snowden', 'Harry Potter', 'Frodo Baggins'];
+
+// Earlier names, mapped to the current ones so tasks saved in a browser keep a valid assignee.
+const RENAMED = { 'Spencer Snowden1': 'Harry Potter', 'Spencer Snowden2': 'Frodo Baggins' };
 
 /**
  * A tiny localStorage hook — survives reloads, no library needed.
@@ -166,6 +170,8 @@ export default function App() {
   // The task open in the modal (null = closed). `id === ''` means a new task.
   const [editing, setEditing] = useState(null);
   const [anchors, setAnchors] = useLocalStorage('vibetracker.anchors', DEFAULT_ANCHORS);
+  // Demo login: who is using the board. Front-end only, no real authentication.
+  const [currentUser, setCurrentUser] = useLocalStorage('vibetracker.currentUser', null);
   // Short confirmation message (e.g. after a hand-off); clears itself.
   const [toast, setToast] = useState(null);
   // Re-render once a minute so due-date colours keep up with the clock (M8).
@@ -174,6 +180,15 @@ export default function App() {
     const timer = setInterval(() => setTick((n) => n + 1), 60000);
     return () => clearInterval(timer);
   }, []);
+
+  // One-off clean-up of tasks saved under the earlier team names.
+  useEffect(() => {
+    setTasks((current) =>
+      current.some((t) => RENAMED[t.assignee])
+        ? current.map((t) => (RENAMED[t.assignee] ? { ...t, assignee: RENAMED[t.assignee] } : t))
+        : current
+    );
+  }, [setTasks]);
 
   const closeModal = useCallback(() => setEditing(null), []);
 
@@ -222,9 +237,13 @@ export default function App() {
     setToast({ text: `Handed off to ${name}.`, key: Date.now() });
   };
 
+  if (!TEAM.includes(currentUser)) {
+    return <Login team={TEAM} onSelect={setCurrentUser} />;
+  }
+
   return (
     <div className="min-h-screen p-6">
-      <header className="mb-6 flex items-end justify-between">
+      <header className="mb-6 flex items-end justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-text-primary">
             Vibecoding Project Tracker
@@ -233,13 +252,25 @@ export default function App() {
             Spencer Snowden
           </p>
         </div>
-        <button
-          type="button"
-          onClick={() => setEditing(blankTask())}
-          className="rounded-md bg-brand-primary px-4 py-2 text-sm font-medium text-white hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-brand-accent"
-        >
-          + Task
-        </button>
+        <div className="flex flex-wrap items-center justify-end gap-3">
+          <p className="text-sm text-text-muted">
+            Signed in as <span className="font-medium text-text-primary">{currentUser}</span>
+          </p>
+          <button
+            type="button"
+            onClick={() => setCurrentUser(null)}
+            className="rounded-md border border-text-muted/40 px-3 py-2 text-sm font-medium text-text-primary hover:bg-text-muted/10 focus:outline-none focus:ring-2 focus:ring-brand-accent"
+          >
+            Switch user
+          </button>
+          <button
+            type="button"
+            onClick={() => setEditing(blankTask())}
+            className="rounded-md bg-brand-primary px-4 py-2 text-sm font-medium text-white hover:brightness-110 focus:outline-none focus:ring-2 focus:ring-brand-accent"
+          >
+            + Task
+          </button>
+        </div>
       </header>
 
       <AnchorBoard anchors={anchors} onChange={setAnchorUrl} />

@@ -96,8 +96,10 @@ Fill these in before tagging `prd-done`:
 | Slot | Name | GitHub handle |
 |---|---|---|
 | Teammate A | `Spencer Snowden` | `Spencre` |
-| Teammate B | `Spencer Snowden1` | `Spencre1` |
-| Teammate C | `Spencer Snowden2` | `Spencre2` |
+| Teammate B | `Harry Potter` | demo teammate, no real account |
+| Teammate C | `Frodo Baggins` | demo teammate, no real account |
+
+This is a solo, individual project. Teammates B and C are fictional demo personas, so the board can show hand-offs and a second and third user logging in. All real work is by Spencer Snowden.
 
 These three names become the **only** allowed values for `Task.assignee`. No auth — just a dropdown.
 
@@ -149,7 +151,7 @@ Fill in:
 
 ## 12. Out of scope (do not build)
 
-- Authentication / accounts.
+- Real authentication (passwords, accounts, a login backend). A front-end demo login is in scope, see §15 item 14. *(Client Q&A; lecturer guidance)*
 - Real GitHub integration.
 - A real backend / shared database.
 - Mobile responsive — desktop only is fine.
@@ -192,14 +194,15 @@ Source tags: *Client* = kickoff session and Q&A, *Mn slide* = milestone slides, 
 12. One original "secret sauce" feature chosen by the team, visible in the demo (examples from the slide: drag-and-drop, collapsible content, sounds). *(M12 slide)*
     - **Chosen: drag a card to another column to change its status.** Why: moving a task is the most frequent action on a Kanban board, and the status dropdown in the modal takes four steps (open, change, save, close); dragging takes one. It supports the core problem of keeping a shared, current view of task state (§1). The dropdown stays as the keyboard-accessible alternative, and a toast ("Moved to Review.") confirms the move.
 13. Stretch, not required: a live Markdown preview next to the Context field, and a "Copied to clipboard!" toast. *(M9, M10 slides)*
+14. **Demo login.** On first load a login screen shows the app name and one "Continue as <name>" button per team member (§8), so anyone gets in with one click. The choice is stored in localStorage (`vibetracker.currentUser`), so a reload keeps the user signed in. The header then shows "Signed in as <name>" and a "Switch user" button that returns to the login screen. This is a **front-end demo login with no real authentication**: no passwords, no email, no backend, and the Task data model is unchanged. It must be fully keyboard operable, with focus on the first button when the screen appears. *(Client Q&A; lecturer guidance)*
 
 ## 16. Non-functional requirements
 
 - **Web-based**, built with a leading web framework (React + Vite + Tailwind, see §6). Any visual design is allowed. *(Client)*
 - **Single team:** one instance serves one team and shows only that team's board; no multi-team support. *(Client Q&A)*
-- **Security:** no cybersecurity requirements at this stage. Login is an optional extra feature, not required for the hackathon; if added, it supersedes the "Authentication" exclusion in §12. *(Client)*
+- **Security:** no cybersecurity requirements at this stage. Because the tool has more than one user, a login screen is included (§15 item 14), but it is a **front-end demo login with no real authentication**: it identifies who is using the board and protects nothing. *(Client Q&A; lecturer guidance)*
 - **Deployment:** deploy to Vercel. The client said deploying is optional as long as the tool can be demonstrated on a laptop, but the assessment requires a link the marker can open. *(Client; Assessment)*
-- **No sign-in or registration** is needed to open and use the prototype. *(Assessment)*
+- **No registration or password** is needed to open and use the prototype: the demo login is one click and has no credentials. *(Assessment)*
 - **Desktop only:** mobile layouts are out of scope (see §12). *(Starter PRD)*
 - **Reliability of data:** closing and reopening the browser keeps everything intact. *(M5 slide)*
 - **Readability:** task type and due-date state must be understandable by icon or label as well as colour. *(Suggested UX principle, not a client requirement)*

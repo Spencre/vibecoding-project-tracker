@@ -1,7 +1,6 @@
 /**
- * Initials badge for a team member. A trailing number is kept so that
- * "Spencer Snowden", "Spencer Snowden1" and "Spencer Snowden2" stay distinguishable
- * (SS, SS1, SS2).
+ * Initials badge for a team member ("Harry Potter" -> HP). A trailing number is kept
+ * so that names differing only by a number stay distinguishable (SS1, SS2).
  */
 export function initials(name) {
   const letters = name
