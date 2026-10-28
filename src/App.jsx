@@ -55,6 +55,9 @@ export const STAGES = [
 // The three names from PRD §8. They are the only valid values for `Task.assignee`.
 export const TEAM = ['Spencer Snowden', 'Harry Potter', 'Frodo Baggins'];
 
+// Demo login (front-end only): lowercase username -> team member. The password is ignored.
+const USERNAMES = { spencer: TEAM[0], harry: TEAM[1], frodo: TEAM[2] };
+
 // Earlier names, mapped to the current ones so tasks saved in a browser keep a valid assignee.
 const RENAMED = { 'Spencer Snowden1': 'Harry Potter', 'Spencer Snowden2': 'Frodo Baggins' };
 
@@ -238,7 +241,7 @@ export default function App() {
   };
 
   if (!TEAM.includes(currentUser)) {
-    return <Login team={TEAM} onSelect={setCurrentUser} />;
+    return <Login users={USERNAMES} onLogin={setCurrentUser} />;
   }
 
   return (
@@ -253,15 +256,29 @@ export default function App() {
           </p>
         </div>
         <div className="flex flex-wrap items-center justify-end gap-3">
-          <p className="text-sm text-text-muted">
-            Signed in as <span className="font-medium text-text-primary">{currentUser}</span>
-          </p>
+          <div className="flex items-center gap-2">
+            <label htmlFor="current-user" className="text-sm text-text-muted">
+              Signed in as
+            </label>
+            <select
+              id="current-user"
+              value={currentUser}
+              onChange={(e) => setCurrentUser(e.target.value)}
+              className="rounded-md border border-text-muted/40 bg-surface-page px-2 py-2 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-accent"
+            >
+              {TEAM.map((name) => (
+                <option key={name} value={name}>
+                  {name}
+                </option>
+              ))}
+            </select>
+          </div>
           <button
             type="button"
             onClick={() => setCurrentUser(null)}
             className="rounded-md border border-text-muted/40 px-3 py-2 text-sm font-medium text-text-primary hover:bg-text-muted/10 focus:outline-none focus:ring-2 focus:ring-brand-accent"
           >
-            Switch user
+            Log out
           </button>
           <button
             type="button"
