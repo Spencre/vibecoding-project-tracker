@@ -177,6 +177,7 @@ Source tags: *Client* = kickoff session and Q&A, *Mn slide* = milestone slides, 
 - Four deliverable slots (Presentation, Demo, Report, Documentation), each holding one URL. *(M11 slide; see `Anchor` in §5)*
 - 3–4 mock tasks are loaded on first use so the board is never empty. *(M4 slide)*
 - All data persists between sessions in localStorage (see §6). *(M5 slide)*
+- Preferences: the signed-in user and the chosen text size are saved in the browser (localStorage), so they survive a reload. *(Added; see §15 items 14 and 15)*
 
 ## 15. Functional requirements
 
